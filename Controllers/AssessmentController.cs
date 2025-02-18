@@ -200,4 +200,59 @@ public class AssessmentsController : ControllerBase
         return Ok(assessmentDto);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAssessment(int id, [FromBody] UpdateAssessmentDto dto)
+    {
+        var assessment = await _context.Assessments
+            .Include(a => a.AssessmentQuestions)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (assessment == null)
+        {
+            return NotFound(new { Message = "Assessment not found." });
+        }
+
+        if (dto == null || dto.QuestionsIds == null || !dto.QuestionsIds.Any())
+        {
+            return BadRequest(new { Message = "Invalid request. Ensure all required fields are provided." });
+        }
+
+        // Validate that all provided question IDs exist
+        var providedQuestionIds = dto.QuestionsIds.Select(q => q.Id).ToList();
+        var existingQuestionIds = await _context.Questions
+            .Where(q => providedQuestionIds.Contains(q.Id))
+            .Select(q => q.Id)
+            .ToListAsync();
+
+        var invalidIds = providedQuestionIds.Except(existingQuestionIds).ToList();
+        if (invalidIds.Any())
+        {
+            return BadRequest(new { Message = $"Invalid Question IDs: {string.Join(", ", invalidIds)}" });
+        }
+
+        // Update basic information
+        assessment.Name = dto.Name;
+        assessment.Duration = TimeSpan.Parse(dto.Duration);
+        assessment.AssessmentDate = DateTime.Parse(dto.Time);
+        assessment.StartTime = TimeSpan.Parse(dto.StartTime);
+        assessment.EndTime = TimeSpan.Parse(dto.EndTime);
+        assessment.TotalMark = dto.TotalMark;
+        assessment.QuestionsCount = dto.QuestionsCount;
+
+        // Remove old questions and add new ones
+        _context.AssessmentQuestions.RemoveRange(assessment.AssessmentQuestions);
+
+        var newAssessmentQuestions = dto.QuestionsIds.Select(q => new AssessmentQuestion
+        {
+            AssessmentId = assessment.Id,
+            QuestionId = q.Id,
+            Mark = q.Mark
+        }).ToList();
+
+        await _context.AssessmentQuestions.AddRangeAsync(newAssessmentQuestions);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { Message = "Assessment updated successfully." });
+    }
+
 }

@@ -17,6 +17,27 @@
   },
   {
     "ContainingType": "AssessmentsController",
+    "Method": "UpdateAssessment",
+    "RelativePath": "api/assessments/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "WebApplication3.DTOs.UpdateAssessmentDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AssessmentsController",
     "Method": "GetAllAssessments",
     "RelativePath": "api/assessments/all",
     "HttpMethod": "GET",
