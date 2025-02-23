@@ -8,11 +8,13 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Cors;
 
 namespace WebApplication2.Controllers
 {
     [ApiController]
     [Route("api/questions")]
+    [EnableCors("AllowOrigin")]
     public class QuestionsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

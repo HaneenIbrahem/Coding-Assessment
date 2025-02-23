@@ -52,6 +52,29 @@ namespace WebApplication4
 
             builder.Services.AddScoped<JwtTokenGenerator>();
 
+
+            ////CORS
+            ///
+
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: "AllowOrigin", builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowLocalhost3000", policy =>
+            //    {
+            //        policy.WithOrigins("http://localhost:3001")
+            //              .AllowAnyHeader()
+            //              .AllowAnyMethod();
+            //    });
+            //});
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -61,14 +84,31 @@ namespace WebApplication4
                 app.UseSwaggerUI();
             }
 
+            //app.UseHttpsRedirection();
+
+            //app.UseAuthorization();
+            //app.UseAuthentication();
+
+
+            //app.UseCors("CorsPolicy");
+            //app.UseCors("AllowOrigin");
+
+
+
+
+
+            //app.MapControllers();
+
+            //app.Run();
+
+
+
+
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
+            app.UseCors("AllowOrigin");
             app.UseAuthentication();
-            app.UseCors("CorsPolicy");
-
+            app.UseAuthorization();
             app.MapControllers();
-
             app.Run();
         }
     }
