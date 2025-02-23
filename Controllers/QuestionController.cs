@@ -37,7 +37,8 @@ namespace WebApplication2.Controllers
                 //Mark = request.Mark,
                 Prompt = request.Prompt,
                 Category = request.Category,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             // Handle different question types

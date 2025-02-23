@@ -14,6 +14,7 @@ namespace WebApplication3.Data
         public DbSet<Assessment> Assessments { get; set; }
         public DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
         public DbSet<TestCase> TestCases { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -32,10 +33,15 @@ namespace WebApplication3.Data
                 .HasForeignKey(aq => aq.QuestionId);
 
             modelBuilder.Entity<TestCase>()
-            .HasOne(tc => tc.CodingQuestion)
-            .WithMany(cq => cq.TestCases)
-            .HasForeignKey(tc => tc.CodingQuestionId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(tc => tc.CodingQuestion)
+                .WithMany(cq => cq.TestCases)
+                .HasForeignKey(tc => tc.CodingQuestionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Optional: Configure the User entity (e.g., adding unique constraints)
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();  // Example of adding a unique constraint on Email
         }
     }
 }
