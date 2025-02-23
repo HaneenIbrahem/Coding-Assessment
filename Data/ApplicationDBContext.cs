@@ -13,6 +13,8 @@ namespace WebApplication3.Data
         public DbSet<EssayQuestion> EssayQuestions { get; set; }
         public DbSet<Assessment> Assessments { get; set; }
         public DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
+        public DbSet<TestCase> TestCases { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +30,12 @@ namespace WebApplication3.Data
                 .HasOne(aq => aq.Question)
                 .WithMany(q => q.AssessmentQuestions)
                 .HasForeignKey(aq => aq.QuestionId);
+
+            modelBuilder.Entity<TestCase>()
+            .HasOne(tc => tc.CodingQuestion)
+            .WithMany(cq => cq.TestCases)
+            .HasForeignKey(tc => tc.CodingQuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

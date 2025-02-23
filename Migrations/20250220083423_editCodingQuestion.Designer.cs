@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication3.Data;
 
@@ -11,9 +12,11 @@ using WebApplication3.Data;
 namespace WebApplication4.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250220083423_editCodingQuestion")]
+    partial class editCodingQuestion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace WebApplication4.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("AssessmentDate");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<TimeSpan>("Duration")
                         .HasColumnType("time");
 
@@ -55,9 +55,6 @@ namespace WebApplication4.Migrations
 
                     b.Property<int>("TotalMark")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -209,7 +206,7 @@ namespace WebApplication4.Migrations
 
                     b.HasIndex("CodingQuestionId");
 
-                    b.ToTable("TestCases");
+                    b.ToTable("TestCase");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.AssessmentQuestion", b =>
@@ -266,13 +263,11 @@ namespace WebApplication4.Migrations
 
             modelBuilder.Entity("WebApplication3.Models.TestCase", b =>
                 {
-                    b.HasOne("WebApplication3.Models.CodingQuestion", "CodingQuestion")
+                    b.HasOne("WebApplication3.Models.CodingQuestion", null)
                         .WithMany("TestCases")
                         .HasForeignKey("CodingQuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CodingQuestion");
                 });
 
             modelBuilder.Entity("WebApplication3.Models.Assessment", b =>

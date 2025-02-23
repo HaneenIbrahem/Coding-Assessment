@@ -46,7 +46,9 @@ public class AssessmentsController : ControllerBase
             StartTime = TimeSpan.Parse(dto.StartTime),
             EndTime = TimeSpan.Parse(dto.EndTime),
             TotalMark = dto.TotalMark,
-            QuestionsCount = dto.QuestionsCount
+            QuestionsCount = dto.QuestionsCount,
+            CreatedAt = DateTime.UtcNow,  
+            UpdatedAt = DateTime.UtcNow
         };
 
         _context.Assessments.Add(assessment);
@@ -64,6 +66,7 @@ public class AssessmentsController : ControllerBase
 
         return Ok(new { Message = "Assessment created successfully", AssessmentId = assessment.Id });
     }
+
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAllAssessments()
@@ -166,6 +169,7 @@ public class AssessmentsController : ControllerBase
         assessment.EndTime = TimeSpan.Parse(dto.EndTime);
         assessment.TotalMark = dto.TotalMark;
         assessment.QuestionsCount = dto.QuestionsCount;
+        assessment.UpdatedAt = DateTime.UtcNow; // ? Update timestamp
 
         // Remove old questions and add new ones
         _context.AssessmentQuestions.RemoveRange(assessment.AssessmentQuestions);
@@ -181,6 +185,30 @@ public class AssessmentsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(new { Message = "Assessment updated successfully." });
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAssessment(int id)
+    {
+        var assessment = await _context.Assessments
+            .Include(a => a.AssessmentQuestions)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (assessment == null)
+        {
+            return NotFound(new { Message = "Assessment not found." });
+        }
+
+        // Remove related questions if not using ON DELETE CASCADE
+        _context.AssessmentQuestions.RemoveRange(assessment.AssessmentQuestions);
+
+        // Remove the assessment
+        _context.Assessments.Remove(assessment);
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { Message = "Assessment deleted successfully." });
     }
 
 }

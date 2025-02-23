@@ -62,14 +62,15 @@ namespace WebApplication2.Controllers
                     break;
 
                 case "coding":
-                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount"))
+                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount") || !request.Details.ContainsKey("description"))
                     {
-                        return BadRequest(new { Message = "Coding questions must have test cases and inputsCount." });
+                        return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and description." });
                     }
 
-                    question.CodingQuestion = new CodingQuestion
+                    var codingQuestion = new CodingQuestion
                     {
                         InputsCount = int.Parse(request.Details["inputsCount"].ToString()),
+                        Description = request.Details["description"].ToString(),
                         TestCases = ((JsonElement)request.Details["testCases"]).EnumerateArray()
                             .Select(tc => new TestCase
                             {
@@ -77,7 +78,11 @@ namespace WebApplication2.Controllers
                                 ExpectedOutput = tc.GetProperty("expectedOutput").GetString()
                             }).ToList()
                     };
+
+                    question.CodingQuestion = codingQuestion;
                     break;
+
+
 
                 default:
                     return BadRequest(new { Message = "Invalid question type." });
@@ -165,7 +170,6 @@ namespace WebApplication2.Controllers
             });
         }
 
-
         private static object GetDetailsBasedOnType(Question q)
         {
             return q.Type.ToLower() switch
@@ -181,12 +185,14 @@ namespace WebApplication2.Controllers
 
                 "coding" => q.CodingQuestion != null ? new
                 {
+                    description = q.CodingQuestion.Description, // Add this line
                     testCases = q.CodingQuestion.TestCases?.Select(tc => new
                     {
                         inputs = tc.Inputs,
                         expectedOutput = tc.ExpectedOutput
                     }).ToList()
                 } : new { Message = "Coding data missing" },
+
 
                 _ => new { Message = "Invalid question type." }
             };
@@ -258,6 +264,7 @@ namespace WebApplication2.Controllers
             //question.Mark = request.Mark;
             question.Prompt = request.Prompt;
             question.Category = request.Category;
+            question.UpdatedAt= DateTime.UtcNow;
 
             // Handle different question types
             switch (request.Type.ToLower())
@@ -286,9 +293,9 @@ namespace WebApplication2.Controllers
                     break;
 
                 case "coding":
-                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount"))
+                    if (!request.Details.ContainsKey("testCases") || !request.Details.ContainsKey("inputsCount") || !request.Details.ContainsKey("description"))
                     {
-                        return BadRequest(new { Message = "Coding questions must have test cases and inputsCount." });
+                        return BadRequest(new { Message = "Coding questions must have test cases, inputsCount, and description." });
                     }
 
                     if (question.CodingQuestion == null)
@@ -297,6 +304,7 @@ namespace WebApplication2.Controllers
                     }
 
                     question.CodingQuestion.InputsCount = int.Parse(request.Details["inputsCount"].ToString());
+                    question.CodingQuestion.Description = request.Details["description"].ToString(); // Add this line
                     question.CodingQuestion.TestCases = ((JsonElement)request.Details["testCases"]).EnumerateArray()
                         .Select(tc => new TestCase
                         {

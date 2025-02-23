@@ -21,10 +21,10 @@ namespace WebApplication3.Models
         public int TotalMark { get; set; }
 
         public int QuestionsCount { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
 
-        // Navigation property for related questions
-        //public List<AssessmentQuestion> AssessmentQuestions { get; set; }
-        //public ICollection<AssessmentQuestion> AssessmentQuestion { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
         public List<AssessmentQuestion> AssessmentQuestions { get; set; } = new();
     }
 }
